@@ -1,0 +1,379 @@
+{
+	"info": {
+		"_postman_id": "be8db659-0ca2-4f09-8824-cc5b3e90f09a",
+		"name": "SKK Suwałki",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "33421120",
+		"_collection_link": "https://mennica-4206.postman.co/workspace/Mennica-Workspace~55d28720-2cd0-4c7f-8388-1eacb3ec84d5/collection/33421120-be8db659-0ca2-4f09-8824-cc5b3e90f09a?action=share&source=collection_link&creator=33421120"
+	},
+	"item": [
+		{
+			"name": "Logowanie",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let jsonData = pm.response.json();\r",
+							"pm.environment.set(\"access_token\", jsonData.access_token);\r",
+							"console.log(\"zapisany token:\",jsonData.access_token)"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "password",
+							"value": "tomtest",
+							"type": "text"
+						},
+						{
+							"key": "login",
+							"value": "tomtest",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/login",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Przeglądanie listy taryf przez operatora Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// const response1 = pm.response.json();\r",
+							"// const hash = response1.data.content.find(item => item.version === \"v4.5\");\r",
+							"\r",
+							"\r",
+							"// pm.globals.set(\"permissions_hash\",pm.response.json().hash.permissions_hash);\r",
+							"// console.log(\"permissions_hash ustawiony na:\", targetItem.permissions_hash);\r",
+							"\r",
+							"\r",
+							"const response = pm.response.json();\r",
+							"console.log(\"Odpowiedź JSON:\", response);\r",
+							"\r",
+							"\r",
+							"if (response.data && response.data.content) {\r",
+							"    const targetItem = response.data.content.find(item => item.id === 95);\r",
+							"\r",
+							"    if (targetItem) {\r",
+							"        pm.environment.set(\"hash_tariff\", targetItem.hash);\r",
+							"        console.log(\"hash_tariff ustawiony na:\", targetItem.hash);\r",
+							"    } else {\r",
+							"        console.log(\"Obiekt z version 'v5.1' nie został znaleziony.\");\r",
+							"    }\r",
+							"} else {\r",
+							"    console.log(\"Tablica 'content' nie istnieje w odpowiedzi.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-Client-Id",
+						"value": "{{login}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/operator/tariff/list?page=0&size=100&order=validFrom,desc",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"operator",
+						"tariff",
+						"list"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "size",
+							"value": "100"
+						},
+						{
+							"key": "order",
+							"value": "validFrom,desc"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pobranie taryfy przez operatora",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-Client-Id",
+						"value": "{{login}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/operator/tariff/get/{{hash_tariff}}",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"operator",
+						"tariff",
+						"get",
+						"{{hash_tariff}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pobranie listy zestawów linii przez operatora",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const response = pm.response.json();\r",
+							"console.log(\"Odpowiedź JSON:\", response);\r",
+							"\r",
+							"\r",
+							"if (response.data && response.data.content) {\r",
+							"    const targetItem = response.data.content.find(item => item.id === 32);\r",
+							"\r",
+							"    if (targetItem) {\r",
+							"        pm.environment.set(\"hash_line\", targetItem.hash);\r",
+							"        console.log(\"hash_line ustawiony na:\", targetItem.hash);\r",
+							"    } else {\r",
+							"        console.log(\"Obiekt z version 'v4.5' nie został znaleziony.\");\r",
+							"    }\r",
+							"} else {\r",
+							"    console.log(\"Tablica 'content' nie istnieje w odpowiedzi.\");\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					},
+					{
+						"key": "X-Client-Id",
+						"value": "{{login}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/operator/setoflines",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"operator",
+						"setoflines"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pobranie konkretnego zestawu linii przez operatora",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Client-Id",
+						"value": "{{login}}",
+						"type": "text"
+					},
+					{
+						"key": "X-Client-Token",
+						"value": "{{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/operator/setoflines/get/{{hash_line}}",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"operator",
+						"setoflines",
+						"get",
+						"{{hash_line}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Init transaction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Client-Id",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"internal_id\": \"58283002-63e1-4385-bc8a-bfd48427aff8\",\r\n\"phone_no\": \"+48123123123\",\r\n\"passenger_uid\": \"b0b0c5ad-b5af-2ffa-9ecc-dc04c72ee0c4\",\r\n\"card_no\": \"01-1F44-1A02-4480\",\r\n\"setoflines_id\": 173,\r\n\"tariff_id\": 95,\r\n\"items\": [\r\n{ \"contract_no\": 44, \"price\": 8100, \"quantity\": 1, \"vat\": 800, \"item_value\": 19800, \"item_vat_value\": 1467, \"name\": \"Tomek Bielawski dlugie nazwisko\", \"line_numbers\": [], \"valid_from\": \"2025-09-29 00:00:00\", \"valid_to\": \"2025-10-29 23:59:59\" }\r\n\r\n],\r\n\"total_gross_value\": 600,\r\n\"total_vat_value\": 45,\r\n\"invoice\":\r\n{ \"purchaser\": \"Nazwa firmy\", \"tax_id\": \"0700-880-100-100\", \"city\": \"Wroclaw\", \"pcode\": \"50-020\", \"address\": \"Ciasna 6\", \"send_to_email\": \"mail@faktura.pl\", \"natural_person\": 0 }\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/transaction",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"transaction"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "confirm transation",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "content-type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\"session_id\": \"58283002-63e1-4385-bc8a-bfd48427aff8\",\r\n\"sale_date\": \"2025-09-29 15:23:00\",\r\n\"adjustments\": [\r\n{ \"contract_no\": 53, \"valid_from\": \"2025-09-29 00:00:00\", \"valid_to\": \"2025-10-23 23:59:59\" }\r\n\r\n]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8094/mapi/transaction_confirm",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8094",
+					"path": [
+						"mapi",
+						"transaction_confirm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "QR decoding",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://skm-api-op.aws.mennica.net/qr/decode/cBUIYrmkQ8v1TOCVjRI13-f2llNKDNGWSqI1UeYbKKwRz3JWGn24NFU75CmT1Jef",
+					"protocol": "https",
+					"host": [
+						"skm-api-op",
+						"aws",
+						"mennica",
+						"net"
+					],
+					"path": [
+						"qr",
+						"decode",
+						"cBUIYrmkQ8v1TOCVjRI13-f2llNKDNGWSqI1UeYbKKwRz3JWGn24NFU75CmT1Jef"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
